@@ -22,6 +22,11 @@ try:
 except ImportError:
     TESSERACT_AVAILABLE = False
 
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\shrey\Downloads\tesseract-ocr-w64-setup-v5.3.0.20221214.exe"
+
+
+
 def check_poppler_installed():
     """Check if poppler is installed on the system"""
     try:
@@ -36,7 +41,7 @@ def check_poppler_installed():
         return False
 
 # === Manually Add API Key ===
-API_KEY = "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"
+API_KEY = "sk---"
 
 if not API_KEY:
     st.error("❌ No API key provided! Please manually set it in the script.")
@@ -1322,6 +1327,9 @@ def get_extraction_parameters(drawing_type):
     # Default fallback
     return get_parameters_for_type(drawing_type)
 
+print("Current API key:", st.session_state.current_api_key)
+
+
 def identify_drawing_type(image_bytes):
     """Identify the type of technical document and component using AI vision model"""
     base64_image = encode_image_to_base64(image_bytes)
@@ -1741,6 +1749,8 @@ def detect_and_correct_orientation(image_bytes):
         
         # Convert to base64 for API call
         base64_image = encode_image_to_base64(image_bytes)
+        base64_image_data_url = f"data:image/png;base64,{base64_image}"
+
         
         try:
             # Call OpenAI API to determine the orientation
@@ -1761,7 +1771,7 @@ def detect_and_correct_orientation(image_bytes):
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": base64_image
+                                    "url": base64_image_data_url
                                 }
                             }
                         ]
@@ -3613,6 +3623,8 @@ def perform_second_extraction_pass(image_bytes, initial_results, component_type=
     2. A precise justification explaining EXACTLY where in the drawing you found this information
     3. Description of any visual elements that led to this determination
     """
+    base64_image_data_url = f"data:image/png;base64,{base64_image}"
+
     
     # Make the API call
     payload = {
@@ -3632,7 +3644,7 @@ def perform_second_extraction_pass(image_bytes, initial_results, component_type=
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": base64_image
+                            "url":  base64_image_data_url
                         }
                     }
                 ]
